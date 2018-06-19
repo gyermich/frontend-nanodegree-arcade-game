@@ -1,16 +1,22 @@
+let rowStep = 101;
+let columnStep = 83;
+let player_x_start = 202;
+let player_y_start = 392;
+let allEnemies = [];
+
 // Enemies our player must avoid
-class Enemy{
+class Enemy {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
 
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
-    constructor(x, y){
+    constructor(x, y) {
             this.x = x;
             this.y = y;
             this.sprite = 'images/enemy-bug.png';
             // randomly generated number between 0 and 300
-            this.speed = Math.floor(Math.random() * 300)
+            this.speed = Math.floor(Math.random() * 300);
         }
 
     // Update the enemy's position, required method for game
@@ -19,10 +25,19 @@ class Enemy{
         // You should multiply any movement by the dt parameter
         // which will ensure the game runs at the same speed for
         // all computers.
-        if (this.x >= 505) {
-            this.x = -101
+        if (this.x >= rowStep * 5) {
+            this.x = -rowStep;
         }
         this.x += this.speed * dt;
+        // check for collisions with player
+        if ((this.y === player.y) && (player.x - rowStep / 2 <= this.x) && (this.x <= player.x + rowStep / 2)) {
+            player.reset();
+        }
+    }
+
+    reset() {
+        this.x = player_x_start;
+        this.y = player_y_start;
     }
 
     render() {
@@ -30,48 +45,60 @@ class Enemy{
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     }
 
-};
+}
 
 
 class Player {
     constructor(sprite = 'images/char-boy.png') {
         this.sprite = sprite;
-        this.x = 202
-        this.y = 374
+        this.x = player_x_start;
+        this.y = player_y_start;
     }
 
-    update(){
-        //TODO
+    update() {
+        if (this.y === -23) {
+            setTimeout( () => {
+                alert("You won!");
+                this.reset();
+                resetEnemies();
+            }, 10);
+        }
+    }
+
+    reset() {
+        this.x = player_x_start;
+        this.y = player_y_start;
     }
 
     handleInput(keyPressed) {
         if ((keyPressed === 'left') && (player.x > 0)) {
-            player.x -= 101;
-        } else if ((keyPressed === 'right') && (player.x < 404)) {
-            player.x += 101;
-        } else if ((keyPressed === 'up') && (player.y > 41)) {
-            player.y -= 83;
-        } else if ((keyPressed === 'down') && (player.y < 374)) {
-            player.y += 83;
+            player.x -= rowStep;
+        } else if ((keyPressed === 'right') && (player.x < rowStep * 4)) {
+            player.x += rowStep;
+        } else if ((keyPressed === 'up') && (player.y > columnStep / 2)) {
+            player.y -= columnStep;
+        } else if ((keyPressed === 'down') && (player.y < columnStep * 4)) {
+            player.y += columnStep;
         }
     }
 
     render() {
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     }
-};
+}
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
-let allEnemies = [];
-for (let i=0; i < 3; i++) {
-    allEnemies.push(new Enemy(0, (i * 83) + 60));
+function resetEnemies() {
+    allEnemies = [];
+    for (let i=0; i < 3; i++) {
+        allEnemies.push(new Enemy(0, (i * columnStep) + 60));
+    }
 }
+
+resetEnemies();
 // Place the player object in a variable called player
 let player = new Player();
-
-
-
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
