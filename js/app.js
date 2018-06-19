@@ -1,20 +1,32 @@
+'use strict';
+
 let rowStep = 101;
 let columnStep = 83;
 let player_x_start = 202;
 let player_y_start = 392;
 let allEnemies = [];
 
+class Character {
+    constructor(x, y, sprite) {
+            this.x = x;
+            this.y = y;
+            this.sprite = sprite
+        }
+
+    render() {
+        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    }
+}
+
 // Enemies our player must avoid
-class Enemy {
+class Enemy extends Character {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
 
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     constructor(x, y) {
-            this.x = x;
-            this.y = y;
-            this.sprite = 'images/enemy-bug.png';
+            super(x, y, 'images/enemy-bug.png');
             // randomly generated number between 0 and 300
             this.speed = Math.floor(Math.random() * 300);
         }
@@ -39,20 +51,12 @@ class Enemy {
         this.x = player_x_start;
         this.y = player_y_start;
     }
-
-    render() {
-        // Draw the enemy on the screen, required method for game
-        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-    }
-
 }
 
 
-class Player {
+class Player extends Character {
     constructor(sprite = 'images/char-boy.png') {
-        this.sprite = sprite;
-        this.x = player_x_start;
-        this.y = player_y_start;
+        super(player_x_start, player_y_start, sprite);
     }
 
     update() {
@@ -80,10 +84,6 @@ class Player {
         } else if ((keyPressed === 'down') && (player.y < columnStep * 4)) {
             player.y += columnStep;
         }
-    }
-
-    render() {
-        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     }
 }
 
